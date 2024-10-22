@@ -1,5 +1,5 @@
-## Phaunus App
-PHAUNOS (Phaunus) was a god of forests. Phaunus is a React Native application designed for forest management. The app supports both iOS and Android platforms and offers a range of features to help users manage forests efficiently.
+## Faunos App
+FAUNOS (Faunos) was a god of forests. Faunos is a React Native application designed for forest management. The app supports both iOS and Android platforms and offers a range of features to help users manage forests efficiently.
 
 ### Features
 
@@ -11,50 +11,48 @@ PHAUNOS (Phaunus) was a god of forests. Phaunus is a React Native application de
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/phaunus.git
+    git clone https://github.com/yourusername/faunos.git
     ```
 2. Navigate to the project directory:
     ```sh
-    cd phaunus
+    cd faunos
     ```
 3. Install dependencies:
     ```sh
     yarn install
     ```
-4. Link native dependencies:
+4. Start the app:
     ```sh
-    npx react-native link
+    npx expo start
     ```
+In the output, you'll find options to open the app in a
 
-### Running the App
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+### Running the Native Apps
+
+Given you have set up your dev env following the Expo docs
 
 #### iOS
 
-1. Install CocoaPods dependencies (required for iOS native modules):
-    ```sh
-    cd ios && pod install && cd ..
-    ```
-2. Run the app:
-    ```sh
-    npx react-native run-ios
-    ```
-
+```sh
+npx expo run:ios
+```
 #### Android
 
-1. Ensure you have an Android emulator running or a device connected.
-2. Run the app:
-    ```sh
-    npx react-native run-android
-    ```
-
-### Contributing
-
-We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
+```sh
+npx expo run:android
+```
 
 ### License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is proprietary and developed for the Skogapp Joint Venture. All rights are reserved.
 
 ### Contact
 
-For any inquiries or support, please contact us at support@phaunusapp.com.
+For any inquiries or support, please contact us at support@faunos.com.
