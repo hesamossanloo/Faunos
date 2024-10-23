@@ -1,55 +1,29 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet } from 'react-native';
+import Mapbox, { Camera, LocationPuck, MapView } from "@rnmapbox/maps";
+import * as Location from "expo-location";
+import { useEffect } from "react";
+import { Alert } from "react-native";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_KEY ?? "");
 
 export default function TabTwoScreen() {
+  console.log("Entry: Inside map.tsx");
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied");
+        return;
+      }
+    })();
+  }, []);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="map" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Map</ThemedText>
-      </ThemedView>
-      <ThemedText>This app explores the functionalities of Mapbox</ThemedText>
-      <Collapsible title="Default Map">
-        <ThemedText>
-          This app has two maps:{' '}
-          <ThemedText type="defaultSemiBold">Skogbruksplan</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">Thematic map</ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://github.com/rnmapbox/maps?tab=readme-ov-file">
-          <ThemedText type="link">Learn more on GitHub</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android and iOS support">
-        <ThemedText>
-          The idea is to be able to open this app on Android and iOS.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Offline">
-        <ThemedText>
-          The Mapbox library is supposed to bring an offline functionality out of the box. 
-          We will explore that in this project too.
-        </ThemedText>
-      </Collapsible>
-    </ParallaxScrollView>
+    <MapView style={{ flex: 1 }} styleURL="mapbox://styles/mapbox/dark-v11">
+      <Camera followUserLocation followZoomLevel={16} />
+      <LocationPuck
+        puckBearingEnabled
+        puckBearing="heading"
+        pulsing={{ isEnabled: true }}
+      />
+    </MapView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
