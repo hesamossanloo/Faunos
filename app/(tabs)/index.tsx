@@ -1,4 +1,10 @@
-import { Image, Platform, StyleSheet } from "react-native";
+// app/(tabs)/index.tsx
+
+import { auth } from "@/services/firebaseConfig";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import { Button, Image, Platform, StyleSheet } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -7,8 +13,27 @@ import { ThemedView } from "@/components/ThemedView";
 
 export default function HomeScreen() {
   console.log("Entry: Inside index.tsx");
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
-  return (
+  useEffect(() => {
+    // Get the currently logged-in user from Firebase Auth
+    const currentUser = auth.currentUser;
+    setUser(currentUser);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      alert("You have been logged out.");
+      router.replace("/login");
+    } catch (error) {
+      console.error("Error logging out: ", error);
+      alert("Failed to log out. Please try again.");
+    }
+  };
+
+  return user ? (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
       headerImage={
@@ -21,6 +46,12 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome to SkogApp!</ThemedText>
         <HelloWave />
+      </ThemedView>
+      <ThemedView style={styles.userInfoContainer}>
+        <ThemedText type="subtitle">Logged in as:</ThemedText>
+        <ThemedText>{user.displayName || ""}</ThemedText>
+        <ThemedText>{user.email}</ThemedText>
+        <Button title="Logout" onPress={handleLogout} />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -53,7 +84,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
-  );
+  ) : null;
 }
 
 const styles = StyleSheet.create({
@@ -61,6 +92,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  userInfoContainer: {
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#f0f0f0",
+    marginVertical: 8,
   },
   stepContainer: {
     gap: 8,

@@ -20,6 +20,10 @@ export default {
         resizeMode: "contain",
         backgroundColor: "#ffffff",
       },
+      infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          "This app needs access to your location to show your current position on the map.",
+      },
     },
     android: {
       adaptiveIcon: {
