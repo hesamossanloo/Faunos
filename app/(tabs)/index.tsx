@@ -1,26 +1,47 @@
 // app/(tabs)/index.tsx
 
-import { auth } from "@/services/firebaseConfig";
+import { auth, db } from "@/services/firebaseConfig";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { Button, Image, Platform, StyleSheet } from "react-native";
+import { Button, Image, StyleSheet, View } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function HomeScreen() {
-  console.log("Entry: Inside index.tsx");
   const [user, setUser] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+
   const router = useRouter();
 
   useEffect(() => {
     // Get the currently logged-in user from Firebase Auth
     const currentUser = auth.currentUser;
     setUser(currentUser);
+
+    // Fetch user-specific data from Firestore if the user is logged in
+    if (currentUser) {
+      fetchUserData(currentUser.uid);
+    }
   }, []);
+
+  const fetchUserData = async (uid: string) => {
+    try {
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setUserData(docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -45,43 +66,18 @@ export default function HomeScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome to SkogApp!</ThemedText>
-        <HelloWave />
       </ThemedView>
       <ThemedView style={styles.userInfoContainer}>
+        <HelloWave />
         <ThemedText type="subtitle">Logged in as:</ThemedText>
-        <ThemedText>{user.displayName || ""}</ThemedText>
-        <ThemedText>{user.email}</ThemedText>
+        <ThemedText>Username: {user.email}</ThemedText>
+        {userData && (
+          <View style={styles.userDataContainer}>
+            <ThemedText>Firstname: {userData.firstName}</ThemedText>
+            <ThemedText>Lastname: {userData.lastName}</ThemedText>
+          </View>
+        )}
         <Button title="Logout" onPress={handleLogout} />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: "cmd + d", android: "cmd + m" })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   ) : null;
@@ -98,6 +94,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f0f0f0",
     marginVertical: 8,
+  },
+  userDataContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   stepContainer: {
     gap: 8,
